@@ -1,0 +1,6 @@
+openai>=1.0.0
+yfinance
+requests
+python-dotenv
+APScheduler
+Flask
