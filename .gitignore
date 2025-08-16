@@ -1,5 +1,9 @@
+# Python package build artifacts
+dist/
+build/
 __pycache__/
 .python-version
 .env
 .venv/
 *.sqlite
+**.egg-info/
