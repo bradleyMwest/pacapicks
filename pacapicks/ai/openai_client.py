@@ -4,7 +4,7 @@ import yaml
 from datetime import date
 from openai import OpenAI
 from pacapicks import config
-from pacapicks.data.schemas import Picks
+from ai.schemas import Picks
 
 PROMPT_PATH = os.path.join(os.path.dirname(__file__), 'prompts.yaml')
 
