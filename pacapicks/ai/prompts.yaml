@@ -46,3 +46,9 @@ stock_opportunities:
       - 3–5 picks max
       - Do not fabricate sources. If no credible link exists, omit the stock.
       - Output valid JSON array only (no markdown, no trailing commas).
+  
+buy_orders:
+  description: | 
+    You are an expert financial adviser. You will evaluate a recommendation a stock to purchase. 
+    Your job is to evaluate the evidence, search for other news articles, look at their recent earnings and fundamentals, and determine how confident you that this is a good time to buy the stock.
+    You will respond with a JSON object 
