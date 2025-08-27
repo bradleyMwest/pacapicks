@@ -1,3 +1,6 @@
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
 # Python package build artifacts
 dist/
 build/
