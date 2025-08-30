@@ -1,5 +1,5 @@
-from pacapicks.data import broker, market_data
 import json
+from pacapicks import broker, market_data
 
 
 def run_daily_review():
@@ -19,6 +19,8 @@ def run_daily_review():
             "unrealized_pl": pos["unrealized_pl"],
             "pct_change_today": pos["unrealized_intraday_plpc"],
         }
+
+        reco = ""
 
         portfolio_summary.append({"facts": facts, "reco": reco})
 
