@@ -2,6 +2,15 @@ from typing import List, Literal
 from datetime import date
 from pydantic import BaseModel, Field, HttpUrl, conint, RootModel
 
+class Position(BaseModel):
+    ticker: str
+    shares: float
+    cost_basis: float
+    current_value: float
+
+class Portfolio(BaseModel):
+    positions: List[Position]
+    cash: float = 0.0
 
 class Catalyst(BaseModel):
     type: str
