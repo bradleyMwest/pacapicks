@@ -1,7 +1,7 @@
 from typing import List, Annotated, Optional
 from datetime import date
 from enum import Enum
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict, computed_field
 
 # ---------- Enums ----------
 
@@ -26,39 +26,71 @@ class DecisionEnum(str, Enum):
     watch = "watch"  # for “not now, monitor”
 
 
-# ---------- Sections ----------
-# Annotated[float, Field(strict=True, gt=0)]
-
-
 class Fundamentals(BaseModel):
-    revenue_yoy_pct: Optional[Annotated[float, Field(ge=-100, le=1000)]] = Field(
-        None, description="Revenue growth YoY in % (e.g., 15.2)"
-    )
+    model_config = ConfigDict(extra="ignore")
 
-    revenue_qoq_pct: Optional[Annotated[float, Field(ge=-100, le=1000)]] = Field(
-        None, description="Revenue growth QoQ in %"
-    )
-    net_income_trend: Optional[str] = Field(
-        None, description="Brief note, e.g., 'narrowing losses', 'swing to profit'"
-    )
-    gross_margin_pct: Optional[Annotated[float, Field(ge=0, le=100)]] = None
+    # === GROWTH ===
+    revenue_yoy_pct_q: Optional[Annotated[float, Field(ge=-100, le=1000)]] = None
+    """Revenue growth (YoY) based on most recent quarter vs same quarter last year (Q/Q YoY).
+    ✅ Available from yfinance (quarterly_financials).
+    """
+
+    # TODO: revenue_yoy_pct_ttm: Optional[float]
+    # "TTM revenue growth (latest 4 quarters vs previous 4).
+    # Requires more than 4 quarters — unreliable in yfinance, revisit with FMP paid or EDGAR API."
+
+    # === PROFITABILITY ===
     operating_margin_pct: Optional[Annotated[float, Field(ge=-100, le=100)]] = None
-    free_cash_flow_notes: Optional[str] = Field(
-        None, description="Direction/consistency of FCF; burn rate if negative"
-    )
+    """Operating margin (latest quarter).
+    ✅ Can be computed from yfinance quarterly_financials: operatingIncome / revenue.
+    """
+
+    # TODO: net_income_trend: Optional[str]
+    # "Semantic label ('narrowing losses', 'swing to profit', etc.) — requires LLM + multi-quarter logic."
+
+    # === VALUATION ===
+    pe_ttm: Optional[Annotated[float, Field(ge=0)]] = None
+    """Trailing P/E ratio.
+    ✅ Available from yfinance.info['trailingPE'].
+    """
+
+    ps_ttm: Optional[Annotated[float, Field(ge=0)]] = None
+    """Trailing P/S ratio.
+    ✅ Available from yfinance.info['priceToSalesTrailing12Months'].
+    """
+
+    # TODO: pb: Optional[float]
+    # "Price-to-book ratio — available from yfinance, but often unreliable."
+
+    # === BALANCE SHEET ===
     cash_reserves_musd: Optional[Annotated[float, Field(ge=0)]] = None
     total_debt_musd: Optional[Annotated[float, Field(ge=0)]] = None
 
-    # Valuation
-    pe_ttm: Optional[Annotated[float, Field(ge=0)]] = None
-    ps_ttm: Optional[Annotated[float, Field(ge=0)]] = None
-    pb: Optional[Annotated[float, Field(ge=0)]] = None
-    peer_valuation_note: Optional[str] = Field(
-        None, description="Cheap/expensive vs peers; rationale"
-    )
+    @computed_field
+    @property
+    def net_debt_musd(self) -> Optional[float]:
+        if self.cash_reserves_musd is None or self.total_debt_musd is None:
+            return None
+        return self.total_debt_musd - self.cash_reserves_musd
 
-    insider_activity_note: Optional[str] = Field(
-        None, description="Notable insider buys/sells with dates/sizes"
+    """Net debt = total debt - cash.
+    ✅ Both fields can be fetched from yfinance.balance_sheet (T=0 column).
+    """
+
+    # === SIZE & SCALE ===
+    market_cap_musd: Optional[float] = None
+    """Market cap in millions USD.
+    ✅ Available from yfinance.info['marketCap'].
+    """
+
+    # TODO: revenue_ttm_musd: Optional[float]
+    # "Total revenue over last 4 quarters — requires summing yfinance quarterly revenue.
+    # OK for rough estimate, revisit for higher precision with better source."
+
+    # Add warnings for any anomalies, missing data, or extreme values
+    warnings: List[str] = Field(
+        default_factory=list,
+        description="Human-readable notes or warnings about anomalies, missing data, or extreme values",
     )
 
 
