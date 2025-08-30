@@ -1,6 +1,6 @@
 from typing import List, Literal, Annotated
 from datetime import date
-from pydantic import BaseModel, Field, HttpUrl, conint, RootModel
+from pydantic import BaseModel, Field, HttpUrl, RootModel
 
 
 class Position(BaseModel):
