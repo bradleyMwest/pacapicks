@@ -15,4 +15,5 @@ ALPACA_BASE_URL = os.getenv("ALPACA_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 APP_BASE_URL = os.getenv("APP_BASE_URL")
-# placeholder for config.py
+
+FMP_API_KEY = os.getenv("FMP_API_KEY")
