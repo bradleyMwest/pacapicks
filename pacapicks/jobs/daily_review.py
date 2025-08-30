@@ -1,6 +1,7 @@
 from pacapicks.data import broker, market_data
 import json
 
+
 def run_daily_review():
     positions = broker.get_positions()
     portfolio_summary = []
@@ -22,6 +23,7 @@ def run_daily_review():
         portfolio_summary.append({"facts": facts, "reco": reco})
 
     return portfolio_summary
+
 
 if __name__ == "__main__":
     review = run_daily_review()

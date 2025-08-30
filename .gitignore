@@ -11,3 +11,6 @@ __pycache__/
 *.sqlite
 **.egg-info/
 **/datastore/*.json
+
+# Ignore VSCode settings
+.vscode/
